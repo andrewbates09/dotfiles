@@ -1,0 +1,65 @@
+#  Best Conky BJelly
+
+background yes
+use_xft yes
+
+xftfont sans:size=11
+xftalpha 1
+update_interval 1.5
+total_run_times 0
+own_window yes
+own_window_transparent yes
+own_window_type override #desktop
+own_window_hints below,sticky,skip_taskbar,skip_pager
+double_buffer yes
+minimum_size 450 1
+maximum_width 600
+draw_shades no
+draw_outline no
+draw_borders no
+draw_graph_borders no
+default_color Black
+default_shade_color 000000
+default_outline_color d9d7d6
+alignment br
+gap_x 5
+gap_y 20
+no_buffers yes
+uppercase no
+cpu_avg_samples 2
+override_utf8_locale yes
+
+
+TEXT
+${font sans:size=70}${alignr}${color #888888}${time %H:%M}${voffset -27}${voffset -32}
+${font sans:size=25}${alignr}${time %a %d %B %Y}${voffset -8}
+${font sans:bold:size=9}
+${color #006400}CPU   ${color #888888}${cpu cpu0}%
+${color #006400}RAM   ${color #888888}$mem / ${memmax}
+${color #006400}HD     ${color #888888}$fs_used / $fs_size
+${color #006400}BAT    ${color #888888}${battery_percent sbs-4-000b}% - ${execi 60 cat /sys/class/power_supply/sbs-4-000b/time_to_empty_avg | awk '{print $0/60/60}'} hrs
+${color #006400}UP     ${color #888888}$uptime_short
+${hr 1}${offset 15}
+
+# NSA Stats
+${if_existing /proc/net/route wlan0}${font Play:normal:size=7}${color1}${alignr 54}${voffset -8$
+${font Play:normal:size=7}${color1}${goto 298}${voffset 2}Up${goto 370}${color1}${totalup wlan0$
+${font Play:normal:size=7}${goto 298}${color1}Down${goto 370}${color1}${totaldown wlan0} / ${co$
+${font Play:normal:size=8}${goto 300}${voffset 2}Local IP${goto 370}${addr wlan0}
+${font Play:normal:size=8}${goto 300}${voffset 1}Public IP${goto 370}${execi 3600 wget -q -O - $
+${font Michroma:size=9}${goto 90}${voffset -42}${color0}${time %a} ${color0}${time %x}
+${font Michroma:size=18}${goto 118}${color1}${voffset -4}${time %H}:${time %M}
+${font Michroma:size=8}${color0}${goto 296}${voffset 18}BATTERIE
+${font Play:size=8}${color0}${goto 278}${voffset 5}${color1}${battery_percent BAT1}%
+
+# lan
+${if_existing /proc/net/route wlan0}${font Play:normal:size=7}${color1}${alignr 54}${voffset -8$
+${font Play:normal:size=7}${color1}${goto 298}${voffset 2}Up${goto 370}${color1}${totalup wlan0$
+${font Play:normal:size=7}${goto 298}${color1}Down${goto 370}${color1}${totaldown wlan0} / ${co$
+${font Play:normal:size=8}${goto 300}${voffset 2}Local IP${goto 370}${addr wlan0}
+${font Play:normal:size=8}${goto 300}${voffset 1}Public IP${goto 370}${execi 3600 wget -q -O - $
+${font Michroma:size=9}${goto 90}${voffset -42}${color0}${time %a} ${color0}${time %x}
+${font Michroma:size=18}${goto 118}${color1}${voffset -4}${time %H}:${time %M}
+${font Michroma:size=8}${color0}${goto 296}${voffset 18}BATTERIE
+${font Play:size=8}${color0}${goto 278}${voffset 5}${color1}${battery_percent BAT1}%
+
