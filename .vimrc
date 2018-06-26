@@ -2,10 +2,10 @@
 " Just Another Vimrc - no plugins (lite)
 "
 " Inspirations from:
-"	* https://github.com/amix/vimrc
-"	* https://github.com/bhanderson/dotfiles
-"	* http://got-ravings.blogspot.com/search/label/statuslines
-"	* http://got-ravings.blogspot.com/2008/08/vim-pr0n-making-statuslines-that-own.html
+"       * https://github.com/amix/vimrc
+"       * https://github.com/bhanderson/dotfiles
+"       * http://got-ravings.blogspot.com/search/label/statuslines
+"       * http://got-ravings.blogspot.com/2008/08/vim-pr0n-making-statuslines-that-own.html
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -45,12 +45,11 @@ map <leader>b :TagbarToggle<cr>
 " ==> VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" Don't add the comment prefix when hitting enter or o/O on a comment line.
+autocmd FileType * setlocal formatoptions-=r
+
 " Set 7 lines to the cursor - when moving vertically using j/k
 set so=7
-
-" Vertical bar & Horizontal line
-" set cc=81
-set cursorline
 
 " Avoid garbled characters in Chinese language windows OS
 let $LANG='en'
@@ -69,7 +68,7 @@ else
 set wildignore+=.git\*,.hg\*,.svn\*
 endif
 
-"Always show current position
+"Always show current position in bottom status bar
 set ruler
 set laststatus=2
 set statusline=%t[%{strlen(&fenc)?&fenc:'none'},%{&ff}]%h%m%r%y%=%l,%c\ \ \ \ %P/%L\ \ 
@@ -85,9 +84,22 @@ set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 
 " In many terminal emulators the mouse works just fine, thus enable it.
-if has('mouse')
-set mouse=a
-endif
+" " disabled for use of scroll paste, see below
+" " clipboard=autoselect forces vim to take over selection to break the white
+" " space padding that happens on paste
+
+" copies to X's primary selection
+"if has('unnamedplus')
+"	set clipboard=unnamed,unnamedplus
+"else
+"	set clipboard=unnamed
+"endif
+"
+"if has('mouse')
+"	set mouse=a
+"else
+"	set mouse=c
+"endif
 
 " Ignore case when searching
 set ignorecase
@@ -119,7 +131,8 @@ set t_vb=
 set tm=500
 
 " Add a bit extra margin to the left
-set foldcolumn=1
+" disabled because crontab complained
+" set foldcolumn=1
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -134,22 +147,39 @@ colorscheme desert
 catch
 endtry
 
+" check here if colors are broken
 set background=dark
+set t_Co=256
 
 " Set extra options when running in GUI mode
 if has("gui_running")
 set guioptions-=T
 set guioptions-=e
-set t_Co=256
 set guitablabel=%M\ %t
 endif
 
+"" Vertical markers/highlighting
+" NOTE: having CC enabled, pads yanks from vim to vim
+"set cc=81
+set cursorline
+"" if 256 bit
+hi ColorColumn ctermbg=235 guibg=#2c2d27
+"" otherwise...
+"hi ColorColumn ctermbg=0 guibg=#000000
+let &colorcolumn=join(range(82,999),",")
+let &colorcolumn="81,".join(range(120,999),",")
+
+"hi Normal guibg=#32322f ctermbg=236
+"hi NonText guibg=#32322f ctermbg=236
+"let &colorcolumn=join(range(1,80),",")
+
+
 " Set utf8 as standard encoding and en_US as the standard language
-set encoding=utf-8
-set fileencodings=utf-8
+"set encoding=utf-8
+"set fileencodings=utf-8
 
 " Use Unix as the standard file type
-set ffs=unix,dos,mac
+"set ffs=unix,dos,mac
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -166,23 +196,40 @@ set noswapfile
 " ==> Text, tab and indent related
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" If use spaces instead of tabs
-" set expandtab
+"" The width of a hard tabstop measured in 'spaces'
+"" - effectively the (maximum) width of an actual tab character.
+set tabstop=2
 
-" Be smart when using tabs ;)
+"" The size of an 'indent'. It's also measured in spaces, so if your code base
+"" indents with tab characters then you want shiftwidth to equal the number of
+"" tab characters times tabstop. This is also used by things like the =, > and
+"" < commands.
+set shiftwidth=2
+
+"" Setting this to a non-zero value other than tabstop will make the tab key
+"" (in insert mode) insert a combination of spaces (and possibly tabs) to
+"" simulate tab stops at this width.
+" set  softtabstop=0
+
+"" Enabling this will make the tab key (in insert mode) insert spaces instead of
+"" tab characters. This also affects the behavior of the retab command.
+set expandtab
+
+"" Enabling this will make the tab key (in insert mode) insert spaces or tabs to
+"" go to the next indent of the next tabstop when the cursor is at the beginning
+"" of a line (ie: the only preceding characters are whitespace).
 set smarttab
 
-" 1 tab == 4 spaces
-set shiftwidth=4
-set tabstop=4
 
-" Linebreak on 500 characters
+"" Linebreak on 500 characters
 set lbr
 set tw=500
 
-set ai "Auto indent
-set si "Smart indent
-set wrap "Wrap lines
+"" This is turned off to alleviate the pains of vi users.  This allows for copy
+"" and scroll clicking to paste, while in insert mode.
+"set ai "Auto indent
+"set si "Smart indent
+"set wrap "Wrap lines
 
 
 """"""""""""""""""""""""""""""
@@ -193,6 +240,14 @@ set wrap "Wrap lines
 " Super useful! From an idea by Michael Naumann
 vnoremap <silent> * :call VisualSelection('f', '')<CR>
 vnoremap <silent> # :call VisualSelection('b', '')<CR>
+
+"match Error /\%81v.\+/
+"set colorcolumn=81
+"set cc=80,81,82,83
+"highlight OverLength ctermbg=DarkGray ctermfg=Gray guibg=#592929
+"match OverLength /\%81v.\+/
+highlight OverLength ctermbg=DarkGray ctermfg=Gray guibg=#592929
+match OverLength /\%81v.\+/
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -217,25 +272,29 @@ map <C-h> <C-W>h
 map <C-l> <C-W>l
 
 " Scroll paste settings
-set nopaste
-if has("gui_running")
-"mouse visual block (ala MS Word)
-nmap <A-LeftMouse> ms<LeftMouse><C-v>`so
-imap <A-LeftMouse> <Esc><C-v>`^ms<Esc>gi<LeftMouse><C-o><C-v>`so
-vmap <A-LeftDrag>  <LeftDrag>
-vmap <A-LeftMouse> <C-v><LeftMouse>msgv`s
-vmap <S-LeftMouse> v<LeftMouse>msgv`s
-set mouse=ra
-else
-"paste toggle
-nmap <F7>      :set paste! paste?<CR>
-imap <F7> <C-o>:set paste!<CR>
-vmap <F7> <Esc>:set paste!<CR>gv
+"set nopaste
+"if has("gui_running")
+" mouse visual block (ala MS Word)
+"nmap <A-LeftMouse> ms<LeftMouse><C-v>`so
+"imap <A-LeftMouse> <Esc><C-v>`^ms<Esc>gi<LeftMouse><C-o><C-v>`so
+"vmap <A-LeftDrag>  <LeftDrag>
+"vmap <A-LeftMouse> <C-v><LeftMouse>msgv`s
+"vmap <S-LeftMouse> v<LeftMouse>msgv`s
+"set mouse=ra clipboard=autoselect
+
+"elseif has('mouse')
+"set mouse=ra
+"set clipboard=unnamed
+"else
+""paste toggle
+"nmap <F7>      :set paste! paste?<CR>
+"imap <F7> <C-o>:set paste!<CR>
+"vmap <F7> <Esc>:set paste!<CR>gv
 "xterm mouse with middleclick paste
-nnoremap <MiddleMouse> i<MiddleMouse>
-vnoremap <MiddleMouse> s<MiddleMouse>
-set pastetoggle=<F7> mouse=rnv
-endif
+"nnoremap <MiddleMouse> i<MiddleMouse>
+"vnoremap <MiddleMouse> s<MiddleMouse>
+"set pastetoggle=<F7> mouse=rnv
+"endif
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -251,13 +310,14 @@ map <leader>sp [s
 map <leader>sa zg
 map <leader>s? z=
 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ==> Misc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 set wildmode=longest,list,full
 " set number
-set listchars=tab:▸\ ,eol:¬,extends:❯,precedes:❮,trail:·
+"set listchars=tab:▸\ ,eol:¬,extends:❯,precedes:❮,trail:·
 
 " Highlight bad whitespace when not in insert as red
 highlight ExtraWhitespace ctermbg=red guibg=red
